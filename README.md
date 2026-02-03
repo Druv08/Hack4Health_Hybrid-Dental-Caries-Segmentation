@@ -1,107 +1,65 @@
 # Hybrid Dental Caries Segmentation
 
-## Overview
-This project implements a hybrid medical image segmentation framework for detecting dental caries in X-ray images.  
-The system combines classical image processing techniques with deep learning-based Attention U-Net architecture.
+A PyTorch-based medical image segmentation system for detecting dental caries in X-ray images. Combines classical image preprocessing with deep learning for accurate lesion detection.
 
-## Hackathon Context
-**Hack4Health** – Medical Image Processing Track  
-- **Round 1:** Medical Image Segmentation  
-- **Round 2:** Medical Image Classification  
+## Approach
 
-## Key Features
-- Classical preprocessing (CLAHE, filtering, normalization)
-- Attention U-Net based semantic segmentation
-- Hybrid Dice + BCE loss
-- Post-processing for clinical realism
-- Visual explainability
+| Stage | Technique |
+|-------|-----------|
+| Preprocessing | CLAHE, Median Filtering, Normalization |
+| Model | Attention U-Net (encoder-decoder with attention gates) |
+| Loss | Dice Loss + Binary Cross-Entropy |
+| Post-processing | Morphological operations, Small blob removal |
 
-## Project Structure
-```
-Hybrid-Dental-Caries-Segmentation/
-│
-├── data/
-│   ├── raw/              # Original dental X-ray images
-│   ├── processed/        # Preprocessed images
-│   └── splits/           # Train/val/test splits
-│
-├── src/
-│   ├── preprocessing/    # Image preprocessing modules
-│   ├── dataset/          # PyTorch dataset classes
-│   ├── models/           # Neural network architectures
-│   ├── training/         # Training loops and utilities
-│   ├── evaluation/       # Metrics and evaluation scripts
-│   └── postprocessing/   # Post-processing refinement
-│
-├── notebooks/            # Jupyter notebooks for exploration
-│
-├── results/
-│   ├── predictions/      # Model predictions
-│   ├── visualizations/   # Visual outputs
-│   └── metrics/          # Evaluation metrics
-│
-├── demo/                 # Demo scripts and examples
-│
-├── requirements.txt      # Python dependencies
-├── README.md            # This file
-└── .gitignore           # Git ignore rules
-```
+## Quick Start
 
-## Installation
-
+### 1. Install Dependencies
 ```bash
-# Clone the repository
-git clone https://github.com/Druv08/Hack4Health_Hybrid-Dental-Caries-Segmentation.git
-cd Hack4Health_Hybrid-Dental-Caries-Segmentation
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-## Usage
-
-```python
-# Quick start example
-from src.preprocessing import preprocess_image
-from src.models import AttentionUNet
-
-# Load and preprocess image
-image = preprocess_image("path/to/dental_xray.png")
-
-# Run segmentation
-model = AttentionUNet()
-prediction = model.predict(image)
+### 2. Run Inference
+Place your dental X-ray in `input_image/` folder, then:
+```bash
+python -m src.models.run_inference
 ```
 
-## Methodology
+### 3. Train Model
+```bash
+python -m src.training.train
+```
 
-### 1. Preprocessing Pipeline
-- Grayscale conversion and normalization
-- CLAHE (Contrast Limited Adaptive Histogram Equalization)
-- Gaussian denoising
-- Edge enhancement
+## Project Structure
+```
+├── src/
+│   ├── dataset/          # Data loading and splitting
+│   ├── preprocessing/    # CLAHE, filtering, normalization
+│   ├── models/           # Attention U-Net architecture
+│   ├── training/         # Training loop and losses
+│   ├── evaluation/       # Dice, IoU, precision, recall
+│   └── postprocessing/   # Mask refinement
+├── input_image/          # Place input X-ray here
+├── results/
+│   ├── checkpoints/      # Saved model weights
+│   └── predictions/      # Output masks and overlays
+└── requirements.txt
+```
 
-### 2. Deep Learning Model
-- **Architecture:** Attention U-Net
-- **Loss Function:** Hybrid Dice + Binary Cross-Entropy
-- **Optimizer:** Adam with learning rate scheduling
+## Outputs
 
-### 3. Post-processing
-- Morphological operations
-- Connected component analysis
-- Contour refinement
-
-## Ethics Statement
-⚠️ **Important:** This system is designed as a **decision-support tool** and does not replace professional dental diagnosis. All predictions should be validated by qualified dental professionals.
+After inference, find results in `results/predictions/`:
+- `predicted_mask.png` - Binary segmentation mask
+- `overlay.png` - X-ray with highlighted caries regions
+- `visualization.png` - Side-by-side comparison
 
 ## Team
-DRUV MISHRA
-NITISH ARUL
+- Druv Mishra
+- Nitish Arul
 
-## License
-This project is for educational and hackathon purposes.
+## Medical Disclaimer
+
+This system is a **decision-support tool** for educational purposes only. It does **not** provide medical diagnosis. All outputs must be reviewed and validated by qualified dental professionals before any clinical decisions are made.
+
+---
+*Hack4Health 2026 - Medical Image Processing Track*
+
