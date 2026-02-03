@@ -1,3 +1,4 @@
+# train_multitask.py
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -18,11 +19,11 @@ from metrics.segmentation_metrics import (
 
 from metrics.classification_metrics import (
     accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score,
+    precision,
+    recall,
+    f1score,
     auc_score,
-    confusion_matrix_score
+    conf_matrix
 )
 
 from dataset.multitask_dataset import MultiTaskDataset
@@ -89,9 +90,11 @@ for epoch in range(EPOCHS):
     seg_model.eval()
     clf_head.eval()
 
-    dice = iou = pix_acc = sens = spec = hd = 0
-    acc = prec = rec = f1 = auc = 0
-    cm = None
+    # --- Initialize metrics ---
+    dice_total = iou_total = 0
+    pix_acc_total = sens_total = spec_total = hd_total = 0
+    acc_total = prec_total = rec_total = f1_total = auc_total = 0
+    all_conf_matrices = []
 
     with torch.no_grad():
         for imgs, masks, labels in val_loader:
@@ -99,37 +102,40 @@ for epoch in range(EPOCHS):
             masks  = masks.to(device)
             labels = labels.to(device)
 
+            # Forward pass
             seg_preds, bottleneck = seg_model.forward_with_features(imgs)
             cls_logits = clf_head(bottleneck)
 
-            # ---- SEG METRICS ----
-            dice += dice_score(seg_preds, masks)
-            iou  += iou_score(seg_preds, masks)
-            pix_acc += pixel_accuracy(seg_preds, masks)
-            sens += sensitivity(seg_preds, masks)
-            spec += specificity(seg_preds, masks)
-            hd   += hausdorff_distance(seg_preds, masks)
+            # ---- SEGMENTATION METRICS ----
+            dice_total += dice_score(seg_preds, masks)
+            iou_total  += iou_score(seg_preds, masks)
+            pix_acc_total += pixel_accuracy(seg_preds, masks)
+            sens_total += sensitivity(seg_preds, masks)
+            spec_total += specificity(seg_preds, masks)
+            hd_total += hausdorff_distance(seg_preds, masks)
 
-            # ---- CLS METRICS ----
-            acc  += accuracy_score(cls_logits, labels)
-            prec += precision_score(cls_logits, labels)
-            rec  += recall_score(cls_logits, labels)
-            f1   += f1_score(cls_logits, labels)
-            auc  += auc_score(cls_logits, labels)
-            cm   = confusion_matrix_score(cls_logits, labels)
+            # ---- CLASSIFICATION METRICS ----
+            acc_total  += accuracy_score(cls_logits, labels)
+            prec_total += precision(cls_logits, labels)
+            rec_total  += recall(cls_logits, labels)
+            f1_total   += f1score(cls_logits, labels)
+            auc_total  += auc_score(cls_logits, labels)
+            all_conf_matrices.append(conf_matrix(cls_logits, labels))
 
-    n = len(val_loader)
+    # --- Average metrics over batches ---
+    num_batches = len(val_loader)
 
-    print(f"\nEpoch [{epoch+1}/{EPOCHS}]")
+    print(f"\n===== Epoch [{epoch+1}/{EPOCHS}] =====")
     print(f"Train Loss: {train_loss:.4f}")
 
-    print("Segmentation Metrics:")
-    print(f" Dice: {dice/n:.4f} | IoU: {iou/n:.4f} | Pixel Acc: {pix_acc/n:.4f}")
-    print(f" Sensitivity: {sens/n:.4f} | Specificity: {spec/n:.4f}")
-    print(f" Hausdorff Distance: {hd/n:.4f}")
+    print("\nSegmentation Metrics:")
+    print(f" Dice: {dice_total/num_batches:.4f} | IoU: {iou_total/num_batches:.4f} | Pixel Acc: {pix_acc_total/num_batches:.4f}")
+    print(f" Sensitivity: {sens_total/num_batches:.4f} | Specificity: {spec_total/num_batches:.4f}")
+    print(f" Hausdorff Distance: {hd_total/num_batches:.4f}")
 
-    print("Classification Metrics:")
-    print(f" Accuracy: {acc/n:.4f} | Precision: {prec/n:.4f}")
-    print(f" Recall: {rec/n:.4f} | F1: {f1/n:.4f} | AUC: {auc/n:.4f}")
-    print(f" Confusion Matrix:\n{cm}")
+    print("\nClassification Metrics:")
+    print(f" Accuracy: {acc_total/num_batches:.4f} | Precision: {prec_total/num_batches:.4f}")
+    print(f" Recall: {rec_total/num_batches:.4f} | F1: {f1_total/num_batches:.4f} | AUC: {auc_total/num_batches:.4f}")
+    print(f"Confusion Matrices per batch: {all_conf_matrices}")
+
 
