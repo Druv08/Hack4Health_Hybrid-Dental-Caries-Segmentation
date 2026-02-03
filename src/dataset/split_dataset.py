@@ -163,14 +163,14 @@ def split_dataset(
     # STEP 6: Print summary
     # =========================================================================
     print("=" * 50)
-    print("✅ Dataset split completed successfully!")
+    print("Dataset split completed successfully!")
     print("=" * 50)
-    print(f"📊 Total samples: {total}")
-    print(f"   ├── Train:      {len(splits['train']):4d} ({len(splits['train'])/total*100:.1f}%)")
-    print(f"   ├── Validation: {len(splits['val']):4d} ({len(splits['val'])/total*100:.1f}%)")
-    print(f"   └── Test:       {len(splits['test']):4d} ({len(splits['test'])/total*100:.1f}%)")
-    print(f"\n📁 Output directory: {output_dir}")
-    print(f"🎲 Random seed: {seed}")
+    print(f"Total samples: {total}")
+    print(f"   Train:      {len(splits['train']):4d} ({len(splits['train'])/total*100:.1f}%)")
+    print(f"   Validation: {len(splits['val']):4d} ({len(splits['val'])/total*100:.1f}%)")
+    print(f"   Test:       {len(splits['test']):4d} ({len(splits['test'])/total*100:.1f}%)")
+    print(f"\nOutput directory: {output_dir}")
+    print(f"Random seed: {seed}")
     
     return splits
 
@@ -191,7 +191,7 @@ def verify_split_integrity(output_dir):
         bool: True if verification passes
     """
     
-    print("\n🔍 Verifying split integrity...")
+    print("\nVerifying split integrity...")
     
     all_files = []
     
@@ -201,11 +201,11 @@ def verify_split_integrity(output_dir):
         
         # Check directories exist
         if not os.path.exists(img_dir):
-            print(f"❌ Missing directory: {img_dir}")
+            print(f"[ERROR] Missing directory: {img_dir}")
             return False
             
         if not os.path.exists(mask_dir):
-            print(f"❌ Missing directory: {mask_dir}")
+            print(f"[ERROR] Missing directory: {mask_dir}")
             return False
         
         # Check image-mask count match
@@ -213,20 +213,20 @@ def verify_split_integrity(output_dir):
         masks = set(os.listdir(mask_dir))
         
         if images != masks:
-            print(f"❌ Image-mask mismatch in {split_name} split")
+            print(f"[ERROR] Image-mask mismatch in {split_name} split")
             return False
         
-        print(f"   ✓ {split_name}: {len(images)} pairs verified")
+        print(f"   [OK] {split_name}: {len(images)} pairs verified")
         
         # Collect all files for overlap check
         all_files.extend(images)
     
     # Check for duplicates (data leakage)
     if len(all_files) != len(set(all_files)):
-        print("❌ Data leakage detected: duplicate files found across splits!")
+        print("[ERROR] Data leakage detected: duplicate files found across splits!")
         return False
     
-    print("✅ Split integrity verified - no data leakage detected!")
+    print("[OK] Split integrity verified - no data leakage detected!")
     return True
 
 
@@ -278,12 +278,12 @@ if __name__ == "__main__":
     
     # Check if source directories exist and contain files
     if not os.path.exists(image_dir):
-        print(f"❌ Image directory not found: {image_dir}")
+        print(f"[ERROR] Image directory not found: {image_dir}")
         print("   Please add dental X-ray images first.")
         exit(1)
         
     if not os.path.exists(mask_dir):
-        print(f"❌ Mask directory not found: {mask_dir}")
+        print(f"[ERROR] Mask directory not found: {mask_dir}")
         print("   Please add segmentation masks first.")
         exit(1)
     
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     image_files = [f for f in os.listdir(image_dir) if not f.startswith('.')]
     
     if len(image_files) == 0:
-        print(f"❌ No images found in: {image_dir}")
+        print(f"[ERROR] No images found in: {image_dir}")
         print("   Please add dental X-ray images before splitting.")
         exit(1)
     
@@ -311,6 +311,6 @@ if __name__ == "__main__":
         verify_split_integrity(output_dir)
         
     except AssertionError as e:
-        print(f"❌ Validation Error: {e}")
+        print(f"[ERROR] Validation Error: {e}")
     except Exception as e:
-        print(f"❌ Unexpected Error: {e}")
+        print(f"[ERROR] Unexpected Error: {e}")

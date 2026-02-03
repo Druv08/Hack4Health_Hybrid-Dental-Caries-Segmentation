@@ -294,28 +294,28 @@ if __name__ == "__main__":
     
     # Check if directories exist
     if not os.path.exists(image_dir):
-        print(f"⚠️  Image directory not found: {image_dir}")
+        print(f"[WARNING] Image directory not found: {image_dir}")
         print("   Please create the directory and add dental X-ray images.")
         exit(1)
         
     if not os.path.exists(mask_dir):
-        print(f"⚠️  Mask directory not found: {mask_dir}")
+        print(f"[WARNING] Mask directory not found: {mask_dir}")
         print("   Please create the directory and add segmentation masks.")
         exit(1)
     
     try:
         # Load all image-mask pairs
         pairs = load_image_mask_pairs(image_dir, mask_dir)
-        print(f"✅ Total image-mask pairs found: {len(pairs)}")
+        print(f"[OK] Total image-mask pairs found: {len(pairs)}")
         
         if len(pairs) > 0:
             # Visualize the first pair as a sanity check
-            print(f"\n📸 Visualizing first pair:")
+            print(f"\nVisualizing first pair:")
             print(f"   Image: {pairs[0][0]}")
             print(f"   Mask:  {pairs[0][1]}")
             visualize_pair(pairs[0][0], pairs[0][1])
             
     except ValueError as e:
-        print(f"❌ Error: {e}")
+        print(f"[ERROR] {e}")
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+        print(f"[ERROR] Unexpected error: {e}")
