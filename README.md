@@ -100,7 +100,8 @@ prediction = model.predict(image)
 ⚠️ **Important:** This system is designed as a **decision-support tool** and does not replace professional dental diagnosis. All predictions should be validated by qualified dental professionals.
 
 ## Team
-Hack4Health Hackathon Participants
+DRUV MISHRA
+NITISH ARUL
 
 ## License
 This project is for educational and hackathon purposes.
