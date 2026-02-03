@@ -22,6 +22,14 @@ from .split_dataset import (
     get_split_summary
 )
 
+# PyTorch Dataset class
+from .segmentation_dataset import (
+    DentalSegmentationDataset,
+    get_dataloaders,
+    verify_dataset,
+    visualize_sample
+)
+
 __all__ = [
     # Data loading
     'load_image_mask_pairs',
@@ -33,5 +41,10 @@ __all__ = [
     # Dataset splitting
     'split_dataset',
     'verify_split_integrity',
-    'get_split_summary'
+    'get_split_summary',
+    # PyTorch Dataset
+    'DentalSegmentationDataset',
+    'get_dataloaders',
+    'verify_dataset',
+    'visualize_sample'
 ]
