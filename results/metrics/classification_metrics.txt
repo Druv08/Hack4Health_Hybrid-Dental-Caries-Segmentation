@@ -1,33 +1,33 @@
 ============================================================
 DENTAL CARIES CLASSIFICATION METRICS
 ============================================================
-Generated: 2026-02-03 15:07:42
+Generated: 2026-02-03 15:31:27
 Number of samples: 50
 Classes: Healthy, Mild, Moderate, Severe
 ============================================================
 
 OVERALL METRICS
 ------------------------------------------------------------
-Accuracy:           0.8800
-Precision (weighted): 0.8895
-Recall (weighted):    0.8800
-F1-Score (weighted):  0.8787
-Mean AUC-ROC:         0.9098
+a) Accuracy:              0.8800
+b) Precision (weighted):  0.8987
+   Recall (weighted):     0.8800
+c) F1-Score (weighted):   0.8797
+d) Mean AUC-ROC:          0.8833
 ------------------------------------------------------------
 
 PER-CLASS AUC-ROC
 ------------------------------------------------------------
-Healthy        : AUC = 0.8975
-Mild           : AUC = 0.9021
-Moderate       : AUC = 0.8857
-Severe         : AUC = 0.9540
+Healthy        : AUC = 0.9648
+Mild           : AUC = 0.8514
+Moderate       : AUC = 0.8125
+Severe         : AUC = 0.9045
 ------------------------------------------------------------
 
-CONFUSION MATRIX
+e) CONFUSION MATRIX
 ------------------------------------------------------------
                    Healthy       Mild   Moderate     Severe
-        Healthy          9          0          1          0
-           Mild          0          9          0          2
-       Moderate          2          0         10          1
-         Severe          0          0          0         16
+        Healthy          9          0          0          0
+           Mild          1         12          0          2
+       Moderate          0          0          6          2
+         Severe          1          0          0         17
 ============================================================
