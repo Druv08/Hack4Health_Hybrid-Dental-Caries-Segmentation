@@ -1,0 +1,27 @@
+============================================================
+DENTAL CARIES DETECTION REPORT
+============================================================
+Image: benign-2.png
+Processed: 2026-02-03 14:20:50
+------------------------------------------------------------
+
+CLASSIFICATION RESULT:
+  Label: CARIES
+  Confidence: 0.6000
+  Reasoning: CARIES DETECTED: Lesion area detected (1.7380% of image); Significant lesion size (1130 pixels)
+
+EXTRACTED FEATURES:
+  lesion_pixels: 1139.000000
+  lesion_ratio: 0.017380
+  num_components: 2.000000
+  mean_component_size: 569.500000
+  max_component_size: 1130.000000
+  min_component_size: 9.000000
+  std_component_size: 560.500000
+  bbox_area: 18025.000000
+  bbox_ratio: 0.275040
+  mean_probability: 0.000000
+  max_probability: 0.000000
+  std_probability: 0.000000
+  lesion_mean_probability: 0.000000
+============================================================
