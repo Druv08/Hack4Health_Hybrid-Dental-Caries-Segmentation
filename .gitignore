@@ -1,0 +1,52 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.env
+venv/
+.env/
+
+# Data folders (medical data should not be uploaded)
+data/raw/*
+data/processed/*
+data/splits/*
+
+# Keep folder structure but ignore contents
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/splits/.gitkeep
+
+# Results (except visualizations for demo)
+results/*
+!results/visualizations/
+!results/predictions/.gitkeep
+!results/visualizations/.gitkeep
+!results/metrics/.gitkeep
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Model weights (too large for git)
+*.pth
+*.h5
+*.ckpt
+
+# Logs
+*.log
+logs/
