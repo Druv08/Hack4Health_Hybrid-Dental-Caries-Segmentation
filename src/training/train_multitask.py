@@ -4,9 +4,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-# ===== IMPORT YOUR EXISTING STUFF =====
-from models.unet_attention import AttentionUNet
-from models.classification_head import ClassificationHead
+# ===== IMPORT COMBINED MULTITASK MODEL =====
+from models.multitask_model import MultiTaskModel
 
 from metrics.segmentation_metrics import (
     dice_score,
@@ -31,7 +30,7 @@ from dataset.multitask_dataset import MultiTaskDataset
 # ===== DEVICE =====
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# ===== FAST + SAFE HYPERPARAMETERS =====
+# ===== HYPERPARAMETERS =====
 EPOCHS = 10          # keeps training under ~20 mins
 BATCH_SIZE = 8
 LR = 1e-4
@@ -43,25 +42,19 @@ val_dataset   = MultiTaskDataset(split="val")
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 val_loader   = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-# ===== MODELS =====
-seg_model = AttentionUNet().to(device)
-clf_head  = ClassificationHead(in_channels=1024, num_classes=2).to(device)
+# ===== MODEL =====
+model = MultiTaskModel().to(device)
 
 # ===== LOSSES =====
 seg_loss_fn = nn.BCELoss()
 clf_loss_fn = nn.CrossEntropyLoss()
 
 # ===== OPTIMIZER =====
-optimizer = optim.Adam(
-    list(seg_model.parameters()) + list(clf_head.parameters()),
-    lr=LR
-)
+optimizer = optim.Adam(model.parameters(), lr=LR)
 
 # ===== TRAINING =====
 for epoch in range(EPOCHS):
-    seg_model.train()
-    clf_head.train()
-
+    model.train()
     train_loss = 0.0
 
     for imgs, masks, labels in train_loader:
@@ -71,15 +64,14 @@ for epoch in range(EPOCHS):
 
         optimizer.zero_grad()
 
-        # ---- SEGMENTATION ----
-        seg_preds, bottleneck = seg_model.forward_with_features(imgs)
-        seg_loss = seg_loss_fn(seg_preds, masks)
+        # ---- FORWARD PASS ----
+        seg_preds, cls_logits = model(imgs)
 
-        # ---- CLASSIFICATION ----
-        cls_logits = clf_head(bottleneck)
+        # ---- LOSSES ----
+        seg_loss = seg_loss_fn(seg_preds, masks)
         clf_loss = clf_loss_fn(cls_logits, labels)
 
-        # ---- TOTAL LOSS (seg dominant) ----
+        # Total loss (seg dominant)
         loss = seg_loss + 0.5 * clf_loss
         loss.backward()
         optimizer.step()
@@ -87,10 +79,8 @@ for epoch in range(EPOCHS):
         train_loss += loss.item()
 
     # ===== VALIDATION =====
-    seg_model.eval()
-    clf_head.eval()
+    model.eval()
 
-    # --- Initialize metrics ---
     dice_total = iou_total = 0
     pix_acc_total = sens_total = spec_total = hd_total = 0
     acc_total = prec_total = rec_total = f1_total = auc_total = 0
@@ -102,9 +92,7 @@ for epoch in range(EPOCHS):
             masks  = masks.to(device)
             labels = labels.to(device)
 
-            # Forward pass
-            seg_preds, bottleneck = seg_model.forward_with_features(imgs)
-            cls_logits = clf_head(bottleneck)
+            seg_preds, cls_logits = model(imgs)
 
             # ---- SEGMENTATION METRICS ----
             dice_total += dice_score(seg_preds, masks)
@@ -122,7 +110,7 @@ for epoch in range(EPOCHS):
             auc_total  += auc_score(cls_logits, labels)
             all_conf_matrices.append(conf_matrix(cls_logits, labels))
 
-    # --- Average metrics over batches ---
+    # Average metrics
     num_batches = len(val_loader)
 
     print(f"\n===== Epoch [{epoch+1}/{EPOCHS}] =====")
@@ -137,5 +125,3 @@ for epoch in range(EPOCHS):
     print(f" Accuracy: {acc_total/num_batches:.4f} | Precision: {prec_total/num_batches:.4f}")
     print(f" Recall: {rec_total/num_batches:.4f} | F1: {f1_total/num_batches:.4f} | AUC: {auc_total/num_batches:.4f}")
     print(f"Confusion Matrices per batch: {all_conf_matrices}")
-
-
