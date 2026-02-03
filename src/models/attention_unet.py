@@ -291,6 +291,25 @@ class AttentionUNet(nn.Module):
         x = torch.sigmoid(x)
         
         return x
+        def forward_with_features(self, x):
+        skip1, x = self.encoder1(x)
+        skip2, x = self.encoder2(x)
+        skip3, x = self.encoder3(x)
+        skip4, x = self.encoder4(x)
+
+        bottleneck = self.bottleneck(x)
+
+        x = self.decoder4(bottleneck, skip4)
+        x = self.decoder3(x, skip3)
+        x = self.decoder2(x, skip2)
+        x = self.decoder1(x, skip1)
+
+        x = self.final_conv(x)
+        x = torch.sigmoid(x)
+
+        return x, bottleneck
+
+    
     
     def get_num_parameters(self):
         """Return the total number of trainable parameters."""
