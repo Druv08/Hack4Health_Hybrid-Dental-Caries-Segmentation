@@ -1,8 +1,8 @@
 ============================================================
-  FINAL METRICS SUMMARY - LOCKED CONFIGURATION
+  FINAL METRICS SUMMARY
 ============================================================
   Generated: 2026-02-03
-  Status: LOCKED - Best Validated Performance
+  Status: Best Validated Performance
 ============================================================
 
 IMPORTANT NOTES:
@@ -85,19 +85,19 @@ Interpretation:
   SUMMARY TABLE
 ============================================================
 
-| Metric Category    | Metric              | Value     | Status   |
-|--------------------|---------------------|-----------|----------|
-| SEGMENTATION       | Dice Coefficient    | 0.9709    | LOCKED   |
-|                    | IoU (Jaccard)       | 0.9435    | LOCKED   |
-|                    | Pixel Accuracy      | 0.9611    | LOCKED   |
-|                    | Sensitivity         | 0.9435    | LOCKED   |
-|                    | Specificity         | 1.0000    | LOCKED   |
-|                    | Hausdorff Distance  | 13.15 px  | LOCKED   |
-| CLASSIFICATION     | Accuracy            | 0.8800    | LOCKED   |
-|                    | Precision           | 0.8987    | LOCKED   |
-|                    | Recall              | 0.8800    | LOCKED   |
-|                    | F1-Score            | 0.8797    | LOCKED   |
-|                    | Mean AUC-ROC        | 0.9098    | LOCKED   |
+| Metric Category    | Metric              | Value     |
+|--------------------|---------------------|-----------|
+| SEGMENTATION       | Dice Coefficient    | 0.9709    |
+|                    | IoU (Jaccard)       | 0.9435    |
+|                    | Pixel Accuracy      | 0.9611    |
+|                    | Sensitivity         | 0.9435    |
+|                    | Specificity         | 1.0000    |
+|                    | Hausdorff Distance  | 13.15 px  |
+| CLASSIFICATION     | Accuracy            | 0.8800    |
+|                    | Precision           | 0.8987    |
+|                    | Recall              | 0.8800    |
+|                    | F1-Score            | 0.8797    |
+|                    | Mean AUC-ROC        | 0.9098    |
 
 ============================================================
   VALIDATION STATEMENT
