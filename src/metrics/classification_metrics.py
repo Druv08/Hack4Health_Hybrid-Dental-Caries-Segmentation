@@ -1,14 +1,35 @@
-from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score,
-    f1_score, roc_auc_score, confusion_matrix
-)
+# metrics/classification_metrics.py
+import torch
+import torch.nn.functional as F
+from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 
-def classification_metrics(y_true, y_pred, y_prob):
-    return {
-        "Accuracy": accuracy_score(y_true, y_pred),
-        "Precision": precision_score(y_true, y_pred),
-        "Recall": recall_score(y_true, y_pred),
-        "F1-Score": f1_score(y_true, y_pred),
-        "AUC": roc_auc_score(y_true, y_prob),
-        "Confusion Matrix": confusion_matrix(y_true, y_pred)
-    }
+def accuracy_score(logits, labels):
+    preds = torch.argmax(logits, dim=1)
+    return (preds == labels).float().mean().item()
+
+def precision(logits, labels):
+    preds = torch.argmax(logits, dim=1).cpu().numpy()
+    labels = labels.cpu().numpy()
+    return precision_score(labels, preds, average='binary')
+
+def recall(logits, labels):
+    preds = torch.argmax(logits, dim=1).cpu().numpy()
+    labels = labels.cpu().numpy()
+    return recall_score(labels, preds, average='binary')
+
+def f1score(logits, labels):
+    preds = torch.argmax(logits, dim=1).cpu().numpy()
+    labels = labels.cpu().numpy()
+    return f1_score(labels, preds, average='binary')
+
+def auc_score(logits, labels):
+    # get probabilities for positive class
+    probs = F.softmax(logits, dim=1)[:, 1].cpu().numpy()
+    labels = labels.cpu().numpy()
+    return roc_auc_score(labels, probs)
+
+def conf_matrix(logits, labels):
+    preds = torch.argmax(logits, dim=1).cpu().numpy()
+    labels = labels.cpu().numpy()
+    return confusion_matrix(labels, preds)
+
